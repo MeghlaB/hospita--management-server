@@ -28,13 +28,20 @@ async function run() {
   try {
      await client.connect();
     const usersCollection = client.db("Hospital").collection("users");
+    const doctorCollection = client.db("Hospital").collection("doctor");
 
 
     // users post collection api
     app.post('/users', async(req,res)=>{
         const userData = req.body;
+        // insert user email if doesn't exits
+        const query = {email:userData.email}
+        const exitingUser = await usersCollection.findOne(query)
+        if(exitingUser){
+          return res.send({message:'user already exits',instertedId:null})
+        }
         const result = await usersCollection.insertOne(userData)
-        console.log(result)
+        // console.log(result)
         res.send(result)
     })
 
@@ -46,6 +53,22 @@ async function run() {
     })
 
 
+
+    // add-doctor collection api
+app.post('/add-doctor' , async(req,res)=>{
+  const doctorData = req.body
+  const result = await doctorCollection.insertOne(doctorData)
+  console.log(result)
+  res.send(result)
+
+})
+
+// add-doctor collection get api
+app.get('/add-doctor',async(req,res)=>{
+  const result = await doctorCollection.find().toArray()
+  console.log(result)
+  res.send(result)
+})
 
 
 
