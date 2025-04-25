@@ -15,6 +15,7 @@
     "express": "^5.1.0",
     "hospital-backend": "file:",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.503.0",
     "mongodb": "^6.15.0"
   }
 }

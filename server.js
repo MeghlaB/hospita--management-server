@@ -28,7 +28,7 @@ async function run() {
   try {
      await client.connect();
     const usersCollection = client.db("Hospital").collection("users");
-    const doctorCollection = client.db("Hospital").collection("doctor");
+    const doctorCollection = client.db("Hospital").collection("doctors");
 
 
     // users post collection api
@@ -64,7 +64,7 @@ app.post('/add-doctor' , async(req,res)=>{
 })
 
 // add-doctor collection get api
-app.get('/add-doctor',async(req,res)=>{
+app.get('/doctors',async(req,res)=>{
   const result = await doctorCollection.find().toArray()
   console.log(result)
   res.send(result)
