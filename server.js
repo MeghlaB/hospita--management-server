@@ -29,6 +29,7 @@ async function run() {
      await client.connect();
     const usersCollection = client.db("Hospital").collection("users");
     const doctorCollection = client.db("Hospital").collection("doctors");
+    const appoinmentsCollection = client.db('Hospital').collection('appoinments')
 
 
     // users post collection api
@@ -79,9 +80,20 @@ app.get('/doctors/:id' , async(req,res)=>{
   res.send(result)
 })
 
+// Booking appoinments
+app.post('/appoinments' , async(req,res)=>{
+  const appoinmentData = req.body
+  const result = await appoinmentsCollection.insertOne(appoinmentData)
+  console.log(result)
+  res.send(result)
 
-
+})
    
+// booking appoinmets all data user
+app.get('/appoinments',async(req,res)=>{
+  const result = await appoinmentsCollection.find().toArray()
+  res.send(result)
+})
 
 
 
