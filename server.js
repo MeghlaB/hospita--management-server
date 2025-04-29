@@ -21,7 +21,7 @@ app.use(
 app.use(express.json());
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const { Rewind } = require("lucide-react");
+const { Rewind, ArrowUpSquare } = require("lucide-react");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.u2fu7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -57,18 +57,38 @@ async function run() {
     const verifyToken = (req, res, next) => {
       console.log("Inside verify token", req.headers.authorization);
       if (!req.headers.authorization) {
-        return res.status(401).send({ message: "forbidden access" });
+        return res.status(401).send({ message: "unauthorized  access" });
       }
       const token = req.headers.authorization.split(" ")[1];
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
-          return res.status(401).send({ message: "forbidden access" });
+          return res.status(401).send({ message: "unauthorized access" });
         }
         req.decoded = decoded;
         next();
       });
       // next()
     };
+
+// use verify admin  after verifyToken 
+const verifyAdmin = async(req,res,next)=>{
+  const email = req.decoded.email
+  const query = {email:email}
+  const user = await usersCollection.findOne(query)
+  const isAdmin = user?.role === 'admin'
+  if(!isAdmin){
+    return res.status(401).send({ message: "forbidden access" });
+  }
+  next()
+}
+
+
+
+
+
+
+
+
 
     // users post collection api
     app.post("/users", async (req, res) => {
@@ -85,7 +105,7 @@ async function run() {
     });
 
     // user get collection api
-    app.get("/users", async (req, res) => {
+    app.get("/users", verifyToken,verifyAdmin, async (req, res) => {
       const result = await usersCollection.find().toArray();
       console.log(result);
       res.send(result);
