@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors');
+const jwt = require('jsonwebtoken')
 require('dotenv').config();
 const port = process.env.PORT || 5000
 
@@ -20,6 +21,7 @@ app.use(express.json())
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { Rewind } = require('lucide-react');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.u2fu7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -38,6 +40,38 @@ async function run() {
     const doctorCollection = client.db("Hospital").collection("doctors");
     const appoinmentsCollection = client.db('Hospital').collection('appoinments')
 
+    // jwt api created
+
+    app.post('/jwt',async(req,res)=>{
+      const user = req.body
+      const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{
+        expiresIn:'365d'
+      })
+      console.log(token)
+      res.send({token})
+    })
+
+    // middlewars 
+    const verifyToken = (req,res,next)=>{
+      console.log('Inside verify token',req.headers.authorization)
+      if(!req.headers.authorization){
+       return res.status (401).send({message:'forbidden access'})
+      }
+      const token = req.headers.authorization.split(' ')[1]
+      jwt.verify(token , process.env.ACCESS_TOKEN_SECRET,(err , decoded)=>{
+        if(err){
+          return res.status (401).send({message:'forbidden access'})
+        }
+        req.decoded = decoded
+        next()
+      })
+      // next()
+    }
+
+
+
+
+
 
     // users post collection api
     app.post('/users', async(req,res)=>{
@@ -54,7 +88,8 @@ async function run() {
     })
 
     // user get collection api
-    app.get('/users',async(req,res)=>{
+    app.get('/users',verifyToken,async(req,res)=>{
+    
       const result = await usersCollection.find().toArray()
       console.log(result)
       res.send(result)
@@ -66,7 +101,7 @@ async function run() {
 app.post('/add-doctor' , async(req,res)=>{
   const doctorData = req.body
   const result = await doctorCollection.insertOne(doctorData)
-  console.log(result)
+  // console.log(result)
   res.send(result)
 
 })
@@ -74,7 +109,7 @@ app.post('/add-doctor' , async(req,res)=>{
 // add-doctor collection get api
 app.get('/doctors',async(req,res)=>{
   const result = await doctorCollection.find().toArray()
-  console.log(result)
+  // console.log(result)
   res.send(result)
 })
 
@@ -83,7 +118,7 @@ app.get('/doctors/:id' , async(req,res)=>{
   const id = req.params.id
   const qeury = {_id: new ObjectId(id)}
   const result = await doctorCollection.find(qeury).toArray()
-  console.log(result)
+  // console.log(result)
   res.send(result)
 })
 
@@ -91,7 +126,7 @@ app.get('/doctors/:id' , async(req,res)=>{
 app.post('/appoinments' , async(req,res)=>{
   const appoinmentData = req.body
   const result = await appoinmentsCollection.insertOne(appoinmentData)
-  console.log(result)
+  // console.log(result)
   res.send(result)
 
 })
