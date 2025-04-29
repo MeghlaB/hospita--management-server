@@ -4,9 +4,16 @@ const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 5000
 
-app.use(cors([
+//Must remove "/" from your production URL
+// midleWare
+app.use(cors({
+  origin: ['http://localhost:5173',
+    'https://hospital-managment-d7e21.web.app'
+  ],
+  // methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+  credentials: true,  
+}))
 
-]))
 
 app.use(express.json())
 
@@ -103,8 +110,8 @@ app.get('/appoinments',async(req,res)=>{
 
 
 
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
