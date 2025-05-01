@@ -49,13 +49,13 @@ async function run() {
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "365d",
       });
-      console.log(token);
+      // console.log(token);
       res.send({ token });
     });
 
     // middlewars
     const verifyToken = (req, res, next) => {
-      console.log("Inside verify token", req.headers.authorization);
+      // console.log("Inside verify token", req.headers.authorization);
       if (!req.headers.authorization) {
         return res.status(401).send({ message: "unauthorized  access" });
       }
@@ -70,25 +70,17 @@ async function run() {
       // next()
     };
 
-// use verify admin  after verifyToken 
-const verifyAdmin = async(req,res,next)=>{
-  const email = req.decoded.email
-  const query = {email:email}
-  const user = await usersCollection.findOne(query)
-  const isAdmin = user?.role === 'admin'
-  if(!isAdmin){
-    return res.status(401).send({ message: "forbidden access" });
-  }
-  next()
-}
-
-
-
-
-
-
-
-
+    // use verify admin  after verifyToken
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      const isAdmin = user?.role === "admin";
+      if (!isAdmin) {
+        return res.status(401).send({ message: "forbidden access" });
+      }
+      next();
+    };
 
     // users post collection api
     app.post("/users", async (req, res) => {
@@ -105,31 +97,32 @@ const verifyAdmin = async(req,res,next)=>{
     });
 
     // user get collection api
-    app.get("/users", verifyToken,verifyAdmin, async (req, res) => {
+    app.get("/users", async (req, res) => {
       const result = await usersCollection.find().toArray();
-      console.log(result);
+      // console.log(result);
+      res.send(result);
+    });
+    app.get("/users-Admin", verifyToken, verifyAdmin, async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      // console.log(result);
       res.send(result);
     });
 
-// verify admin cheack 
-app.get('/users/admin/:email',verifyToken,async(req,res)=>{
-  const email = req.params.email
-  console.log(email)
-  if (email !== req.decoded.email){
-    return res.status(403).send({ message: "unauthorized access" });
-  }
-  const query = {email:email}
-  const user = await usersCollection.findOne(query)
-  let admin = false
-  if(user){
-    admin = user?.role ==='admin'
-  }
-  res.send({admin})
-})
-
-
-
-
+    // verify admin cheack
+    app.get("/users/admin/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+      // console.log(email)
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: "unauthorized access" });
+      }
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.role === "admin";
+      }
+      res.send({ admin });
+    });
 
     // add-doctor collection api
     app.post("/add-doctor", async (req, res) => {
@@ -155,6 +148,18 @@ app.get('/users/admin/:email',verifyToken,async(req,res)=>{
       res.send(result);
     });
 
+    // Route to get filtered doctors by specialization
+    // app.get("/doctors", async (req, res) => {
+    //   const { specialization } = req.query;
+    //   console.log(specialization)
+    //   const query = {};
+    
+    //   if (specialization) query.specialization= specialization;
+    
+    //   const result = await doctorCollection.find(query).toArray();
+    //   res.send(result);
+    // });
+    
     // Booking appoinments
     app.post("/appoinments", async (req, res) => {
       const appoinmentData = req.body;
@@ -168,6 +173,59 @@ app.get('/users/admin/:email',verifyToken,async(req,res)=>{
       const result = await appoinmentsCollection.find().toArray();
       res.send(result);
     });
+
+    // specific User Appointment Return
+    app.get("/appoinments/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await appoinmentsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // appoinments delated  or cancale
+    app.delete("/appoinments/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await appoinmentsCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
+    });
+
+    app.put("/appointments/:id", async (req, res) => {
+      const { id } = req.params;
+      const { status } = req.body;
+    
+      try {
+        const updatedAppointment = await appoinmentsCollection.updateOne(
+          { _id: new ObjectId(id) },  
+          { $set: { status } }
+        );
+    
+        if (!updatedAppointment.modifiedCount) {
+          return res.status(404).json({ message: "Appointment not found" });
+        }
+    
+        res.json({ message: "Appointment status updated", updatedAppointment });
+      } catch (error) {
+        console.error("Error updating appointment:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    });
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // await client.db("admin").command({ ping: 1 });
     // console.log("Pinged your deployment. You successfully connected to MongoDB!");
