@@ -164,7 +164,7 @@ async function run() {
     app.post("/appoinments", async (req, res) => {
       const appoinmentData = req.body;
       const result = await appoinmentsCollection.insertOne(appoinmentData);
-      // console.log(result)
+      console.log(result)
       res.send(result);
     });
 
@@ -175,23 +175,29 @@ async function run() {
     });
 
     // specific User Appointment Return
-    app.get("/appoinments/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const result = await appoinmentsCollection.find(query).toArray();
-      res.send(result);
-    });
+ // Get appointments by user email
+app.get("/appoinments/:email", async (req, res) => {
+  const email = req.params.email;
+  const query = { email: email };
+  const result = await appoinmentsCollection.find(query).toArray();
+  res.send(result);
+});
 
-    // appoinments delated  or cancale
-    app.delete("/appoinments/:id", async (req, res) => {
-      const id = req.params.id;
-      const result = await appoinmentsCollection.deleteOne({
-        _id: new ObjectId(id),
-      });
-      res.send(result);
-    });
+// Cancel an appointment by ID
+app.patch("/appointments/cancel/:id", async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $set: {
+      status: 'canceled'
+    }
+  };
+  const result = await appoinmentsCollection.updateOne(filter, updateDoc);
+  res.send(result);
+});
 
-    app.put("/appointments/:id", async (req, res) => {
+
+    app.put("/appointment/:id", async (req, res) => {
       const { id } = req.params;
       const { status } = req.body;
     
