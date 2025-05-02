@@ -102,11 +102,66 @@ async function run() {
       // console.log(result);
       res.send(result);
     });
+
+    app.put('/users/:id', async (req, res) => {
+      const { id } = req.params; // User ID from the URL
+      const { name, status, photo } = req.body; // New data from the request body
+    
+      try {
+        // Check if ID is valid ObjectId
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).json({ message: 'Invalid user ID' });
+        }
+    
+        // Prepare the update data
+        const updateData = {
+          $set: { name, status, photo }
+        };
+    
+        // Update the user profile in MongoDB
+        const result = await usersCollection.updateOne(
+          { _id: new ObjectId(id) }, // Use ObjectId for the MongoDB query
+          updateData
+        );
+    
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+    
+        // Respond with the updated user data
+        res.status(200).json({
+          message: 'User profile updated successfully',
+          updatedFields: { name, status, photo }
+        });
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({ message: 'Server error, please try again later.' });
+      }
+    });
+    
+
+
+
+
+
+
+
     app.get("/users-Admin", verifyToken, verifyAdmin, async (req, res) => {
       const result = await usersCollection.find().toArray();
       // console.log(result);
       res.send(result);
     });
+
+
+
+
+
+
+
+
+
+
+
 
     // verify admin cheack
     app.get("/users/admin/:email", verifyToken, async (req, res) => {
@@ -124,6 +179,12 @@ async function run() {
       res.send({ admin });
     });
 
+
+
+
+
+
+
     // add-doctor collection api
     app.post("/add-doctor", async (req, res) => {
       const doctorData = req.body;
@@ -135,7 +196,7 @@ async function run() {
     // add-doctor collection get api
     app.get("/doctors", async (req, res) => {
       const result = await doctorCollection.find().toArray();
-      // console.log(result)
+      console.log(result)
       res.send(result);
     });
 
