@@ -103,43 +103,92 @@ async function run() {
       res.send(result);
     });
 
-    app.put('/users/:id', async (req, res) => {
-      const { id } = req.params; // User ID from the URL
-      const { name, status, photo } = req.body; // New data from the request body
-    
-      try {
-        // Check if ID is valid ObjectId
-        if (!ObjectId.isValid(id)) {
-          return res.status(400).json({ message: 'Invalid user ID' });
-        }
-    
-        // Prepare the update data
-        const updateData = {
-          $set: { name, status, photo }
-        };
-    
-        // Update the user profile in MongoDB
-        const result = await usersCollection.updateOne(
-          { _id: new ObjectId(id) }, // Use ObjectId for the MongoDB query
-          updateData
-        );
-    
-        if (result.matchedCount === 0) {
-          return res.status(404).json({ message: 'User not found' });
-        }
-    
-        // Respond with the updated user data
-        res.status(200).json({
-          message: 'User profile updated successfully',
-          updatedFields: { name, status, photo }
-        });
-      } catch (error) {
-        console.error('Error updating profile:', error);
-        res.status(500).json({ message: 'Server error, please try again later.' });
-      }
-    });
-    
 
+
+
+       // user profile api.......................
+       app.get('/users/profile/:email', async (req, res) => {
+        try {
+          const email = req.params.email; 
+          // console.log('Email:', email);
+  
+          const query = { email: email }; 
+          // console.log('Query:', query);
+  
+          const user = await usersCollection.findOne(query); 
+  
+          if (user) {
+            res.send(user); // Send the user data
+          } else {
+            res.status(404).send({ message: 'User not found' });
+          }
+        } catch (error) {
+          res.status(500).send({ message: 'Error fetching user profile', error });
+        }
+      });
+    
+      app.get('/users/profileById/:id', async (req, res) => {
+        try {
+          const id = req.params.id;
+          const query = { _id: new ObjectId(id) };
+          const user = await usersCollection.findOne(query);
+      
+          if (user) {
+            res.send(user);
+          } else {
+            res.status(404).send({ message: 'User not found' });
+          }
+        } catch (error) {
+          res.status(500).send({ message: 'Error fetching user profile', error });
+        }
+      });
+      
+      // app.get('/update/:id', async (req, res) => {
+      //   try {
+      //     const id = req.params.id; // Extract the email from the URL parameters
+      //     // console.log('Email:', id);
+  
+      //     const query = { _id: new ObjectId(id) }; // Query to search for the user
+      //     // console.log('Query:', query);
+  
+      //     const user = await usersCollection.findOne(query); // Find the user in the collection
+  
+      //     if (user) {
+      //       res.send(user); // Send the user data
+      //     } else {
+      //       res.status(404).send({ message: 'User not found' });
+      //     }
+      //   } catch (error) {
+      //     res.status(500).send({ message: 'Error fetching user profile', error });
+      //   }
+      // });
+      // user update api.......................
+      app.put('/users/update/:id', async (req, res) => {
+        const id = req.params.id;
+        const userData = req.body;
+  
+        try {
+          const query = { _id: new ObjectId(id) };
+          const updateDoc = {
+            $set: {
+              name: userData.name,
+              status: userData.status,
+              role: userData.role,
+              upazila: userData.upazila,
+              photo: userData.photo
+            }
+          };
+  
+          const result = await usersCollection.updateOne(query, updateDoc);
+          if (result.modifiedCount > 0) {
+            res.send({ success: true, message: 'Profile updated successfully!' });
+          } else {
+            res.send({ success: false, message: 'No changes were made.' });
+          }
+        } catch (error) {
+          res.status(500).send({ success: false, message: 'Failed to update profile.', error: error.message });
+        }
+      });
 
 
 
