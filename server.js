@@ -44,12 +44,22 @@ async function run() {
 
     // jwt api created
 
+    // app.post("/jwt", async (req, res) => {
+    //   const user = req.body;
+    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    //     expiresIn: "365d",
+    //   });
+    //   // console.log(token);
+    //   res.send({ token });
+    // });
+
+
     app.post("/jwt", async (req, res) => {
       const user = req.body;
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "365d",
+      const payload = { email: user.email };
+      const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1d",
       });
-      // console.log(token);
       res.send({ token });
     });
 
@@ -284,7 +294,8 @@ async function run() {
       res.send(result);
     });
 
-    // specific User Appointment Return
+
+
  // Get appointments by user email
 app.get("/appoinments/:email", async (req, res) => {
   const email = req.params.email;
@@ -292,6 +303,29 @@ app.get("/appoinments/:email", async (req, res) => {
   const result = await appoinmentsCollection.find(query).toArray();
   res.send(result);
 });
+
+
+ // Get appointments by user id 
+
+ app.get('/appointments/:id',async(req,res)=>{
+  try {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const user = await appoinmentsCollection.findOne(query);
+
+    if (user) {
+      res.send(user);
+    } else {
+      res.status(404).send({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: 'Error fetching user profile', error });
+  }
+ })
+
+
+
+
 
 // Cancel an appointment by ID
 app.patch("/appointments/cancel/:id", async (req, res) => {
