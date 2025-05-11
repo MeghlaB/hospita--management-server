@@ -248,7 +248,7 @@ async function run() {
     app.post("/add-doctor", async (req, res) => {
       const doctorData = req.body;
       const result = await doctorCollection.insertOne(doctorData);
-      // console.log(result)
+      console.log(result)
       res.send(result);
     });
 
