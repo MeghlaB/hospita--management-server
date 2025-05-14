@@ -13,7 +13,7 @@ app.use(
       "http://localhost:5173",
       "https://hospital-managment-d7e21.web.app",
     ],
-    // methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
     credentials: true,
   })
 );
@@ -94,21 +94,21 @@ async function run() {
     // users post collection api
     app.post("/users", async (req, res) => {
       const userData = req.body;
-      // insert user email if doesn't exits
+    
       const query = { email: userData.email };
       const exitingUser = await usersCollection.findOne(query);
       if (exitingUser) {
         return res.send({ message: "user already exits", instertedId: null });
       }
       const result = await usersCollection.insertOne(userData);
-      // console.log(result)
+      
       res.send(result);
     });
 
     // user get collection api
     app.get("/users", async (req, res) => {
       const result = await usersCollection.find().toArray();
-      // console.log(result);
+   
       res.send(result);
     });
 
@@ -274,18 +274,6 @@ async function run() {
     });
 
   
-    // Route to get filtered doctors by specialization
-    // app.get("/doctors", async (req, res) => {
-    //   const { specialization } = req.query;
-    //   console.log(specialization)
-    //   const query = {};
-
-    //   if (specialization) query.specialization= specialization;
-
-    //   const result = await doctorCollection.find(query).toArray();
-    //   res.send(result);
-    // });
-
     // Booking appoinments
     app.post("/appoinments", async (req, res) => {
       const appoinmentData = req.body;
@@ -360,11 +348,9 @@ async function run() {
       }
     });
 
-    // await client.db("admin").command({ ping: 1 });
-    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
+   
   }
 }
 run().catch(console.dir);
