@@ -248,11 +248,11 @@ async function run() {
       const id = req.params.id;
       const qeury = { _id: new ObjectId(id) };
       const result = await doctorCollection.find(qeury).toArray();
-      // console.log(result)
+ 
       res.send(result);
     });
 
-    // Example: GET /doctors?location=Bangalore&search=Cardio
+   
     app.get("/doctor-search", async (req, res) => {
       const { location, search } = req.query;
 
@@ -288,7 +288,7 @@ async function run() {
       res.send(result);
     });
 
-    // Get appointments by user email
+   
     app.get("/appoinments/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
