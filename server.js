@@ -281,6 +281,30 @@ async function run() {
       console.log(result);
       res.send(result);
     });
+    app.post("/appoinments", async (req, res) => {
+      const appoinmentData = req.body;
+      const result = await appoinmentsCollection.insertOne(appoinmentData);
+      console.log(result);
+      res.send(result);
+    });
+    app.post("/appoinments", async (req, res) => {
+      const appoinmentData = req.body;
+      const result = await appoinmentsCollection.insertOne(appoinmentData);
+      console.log(result);
+      res.send(result);
+    });
+    app.post("/appoinments", async (req, res) => {
+      const appoinmentData = req.body;
+      const result = await appoinmentsCollection.insertOne(appoinmentData);
+      console.log(result);
+      res.send(result);
+    });
+    app.post("/appoinments", async (req, res) => {
+      const appoinmentData = req.body;
+      const result = await appoinmentsCollection.insertOne(appoinmentData);
+      console.log(result);
+      res.send(result);
+    });
 
     // booking appoinmets all data user
     app.get("/appoinments", async (req, res) => {
