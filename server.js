@@ -44,15 +44,6 @@ async function run() {
 
     // jwt api created
 
-    // app.post("/jwt", async (req, res) => {
-    //   const user = req.body;
-    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    //     expiresIn: "365d",
-    //   });
-    //   // console.log(token);
-    //   res.send({ token });
-    // });
-
     app.post("/jwt", async (req, res) => {
       const user = req.body;
       const payload = { email: user.email };
@@ -116,10 +107,10 @@ async function run() {
     app.get("/users/profile/:email", async (req, res) => {
       try {
         const email = req.params.email;
-        // console.log('Email:', email);
+      
 
         const query = { email: email };
-        // console.log('Query:', query);
+    
 
         const user = await usersCollection.findOne(query);
 
@@ -213,20 +204,7 @@ async function run() {
       const user = await usersCollection.findOne(query);
       res.send({ admin: user?.role === "admin" });
     });
-    // app.get("/users/admin/:email", verifyToken, async (req, res) => {
-    //   const email = req.params.email;
-    //   // console.log(email)
-    //   if (email !== req.decoded.email) {
-    //     return res.status(403).send({ message: "unauthorized access" });
-    //   }
-    //   const query = { email: email };
-    //   const user = await usersCollection.findOne(query);
-    //   let admin = false;
-    //   if (user) {
-    //     admin = user?.role === "admin";
-    //   }
-    //   res.send({ admin });
-    // });
+  
 
     // add-doctor collection api
     app.post("/add-doctor", async (req, res) => {
