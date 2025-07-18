@@ -95,6 +95,18 @@ async function run() {
       
       res.send(result);
     });
+    app.post("/users", async (req, res) => {
+      const userData = req.body;
+    
+      const query = { email: userData.email };
+      const exitingUser = await usersCollection.findOne(query);
+      if (exitingUser) {
+        return res.send({ message: "user already exits", instertedId: null });
+      }
+      const result = await usersCollection.insertOne(userData);
+      
+      res.send(result);
+    });
 
     // user get collection api
     app.get("/users", async (req, res) => {
