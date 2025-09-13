@@ -1,4 +1,4 @@
-# 🏥 Hospital Management System - Backend
+#  Hospital Management System - Backend
 
 This is the backend for the **Hospital Management System**, built using **Node.js**, **Express.js**, and the native **MongoDB driver**. It provides a RESTful API for managing hospital data including patients, doctors, appointments, departments, and more.
 
