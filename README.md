@@ -4,7 +4,7 @@ This is the backend for the **Hospital Management System**, built using **Node.j
 
 ---
 
-## 🚀 Features
+##  Features
 
 - User Authentication & Authorization (JWT-based)
 - Admin, Doctor & Patient Role Management
@@ -17,7 +17,7 @@ This is the backend for the **Hospital Management System**, built using **Node.j
 
 ---
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 - Node.js
 - Express.js
@@ -30,7 +30,7 @@ This is the backend for the **Hospital Management System**, built using **Node.j
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 
 hospital-management-backend/
